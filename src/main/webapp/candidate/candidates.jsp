@@ -38,9 +38,18 @@
                         <tr>
                             <td>
                                 <a href='<c:url value="/candidate/edit.jsp?id=${candidate.id}"/>'>
-                                    <i class="fa fa-edit mr-3"></i>
+                                    <button style="font-size:12px;color:blue">Edit candidate</button>
+                                </a>
+                                <a href='<c:url value="/photoUpload.do?id=${candidate.id}"/>'>
+                                    <button style="font-size:12px;color:blue">Add photo</button>
+                                </a>
+                                <a href='<c:url value="/candidateDelete.do?id=${candidate.id}"/>'>
+                                    <button style="font-size:12px;color:blue">Delete candidate</button>
                                 </a>
                             <td><c:out value="${candidate.name}"/> </td>
+                            </td>
+                            <td>
+                                <img src="<c:url value='/download?name=${candidate.id}'/>" width="100px" height="100px"/>
                             </td>
                         </tr>
                     </c:forEach>
