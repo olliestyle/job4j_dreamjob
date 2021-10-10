@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Properties;
 
 public class DownloadServlet extends HttpServlet {
     public static int counts = 0;
@@ -13,7 +14,10 @@ public class DownloadServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String name = req.getParameter("name");
         File downloadFile = null;
-        for (File file : new File("/home/murat/images").listFiles()) {
+        InputStream in = PhotoUploadServlet.class.getClassLoader().getResourceAsStream("app.properties");
+        Properties config = new Properties();
+        config.load(in);
+        for (File file : new File(config.getProperty("uploadPath")).listFiles()) {
             if (name.equals(file.getName())) {
                 downloadFile = file;
                 break;

@@ -14,8 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class UploadServlet extends HttpServlet {
     @Override
@@ -31,6 +33,9 @@ public class UploadServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        InputStream in = PhotoUploadServlet.class.getClassLoader().getResourceAsStream("app.properties");
+        Properties config = new Properties();
+        config.load(in);
         DiskFileItemFactory factory = new DiskFileItemFactory();
         ServletContext servletContext = this.getServletConfig().getServletContext();
         File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
@@ -38,7 +43,7 @@ public class UploadServlet extends HttpServlet {
         ServletFileUpload upload = new ServletFileUpload(factory);
         try {
             List<FileItem> items = upload.parseRequest(req);
-            File folder = new File("/home/murat/images");
+            File folder = new File(config.getProperty("uploadPath"));
             if (!folder.exists()) {
                 folder.mkdir();
             }
