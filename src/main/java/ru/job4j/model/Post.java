@@ -16,6 +16,13 @@ public class Post {
         created = LocalDateTime.now();
     }
 
+    public Post(int id, String name, String description, LocalDateTime created) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.created = created;
+    }
+
     public int getId() {
         return this.id;
     }
@@ -59,5 +66,10 @@ public class Post {
     @Override
     public int hashCode() {
        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" + "id=" + id + ", name='" + name + '\'' + ", description='" + description + '\'' + ", created=" + created + '}';
     }
 }
