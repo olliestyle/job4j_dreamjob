@@ -13,10 +13,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PsqlStore implements Store {
 
     private final BasicDataSource pool = new BasicDataSource();
+    private static final Logger LOG = LoggerFactory.getLogger(PsqlStore.class.getName());
 
     private PsqlStore() {
         Properties cfg = new Properties();
@@ -57,11 +60,14 @@ public class PsqlStore implements Store {
         ) {
             try (ResultSet it = ps.executeQuery()) {
                 while (it.next()) {
-                    posts.add(new Post(it.getInt("id"), it.getString("name"), it.getString("description"), it.getTimestamp("created").toLocalDateTime()));
+                    posts.add(new Post(it.getInt("id"),
+                                       it.getString("name"),
+                                       it.getString("description"),
+                                       it.getTimestamp("created").toLocalDateTime()));
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error in findAllPosts() method");
         }
         return posts;
     }
@@ -78,7 +84,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error in findAllCandidates() method");
         }
         return candidates;
     }
@@ -94,7 +100,9 @@ public class PsqlStore implements Store {
 
     private Post createPost(Post post) {
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps =  cn.prepareStatement("INSERT INTO post(name, description, created) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)
+             PreparedStatement ps =  cn.prepareStatement(
+                     "INSERT INTO post(name, description, created) VALUES (?, ?, ?)",
+                          PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             ps.setString(1, post.getName());
             ps.setString(2, post.getDescription());
@@ -106,7 +114,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error in createPost() method");
         }
         return post;
     }
@@ -120,7 +128,7 @@ public class PsqlStore implements Store {
             ps.setInt(3, post.getId());
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error in updatePost() method");
         }
     }
 
@@ -135,7 +143,9 @@ public class PsqlStore implements Store {
 
     private Candidate createCandidate(Candidate candidate) {
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps =  cn.prepareStatement("INSERT INTO candidates(name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
+             PreparedStatement ps =  cn.prepareStatement(
+                     "INSERT INTO candidates(name) VALUES (?)",
+                          PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             ps.setString(1, candidate.getName());
             ps.execute();
@@ -145,7 +155,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error in createCandidate() method");
         }
         return candidate;
     }
@@ -158,7 +168,7 @@ public class PsqlStore implements Store {
             ps.setInt(2, candidate.getId());
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error in updateCandidate() method");
         }
     }
 
@@ -170,14 +180,14 @@ public class PsqlStore implements Store {
         ) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
+            if (rs.next()) {
                 toReturn = new Post(rs.getInt("id"),
                                     rs.getString("name"),
                                     rs.getString("description"),
                                     rs.getTimestamp("created").toLocalDateTime());
                 }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error in findPostById() method");
         }
         return toReturn;
     }
@@ -190,11 +200,11 @@ public class PsqlStore implements Store {
         ) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
+            if (rs.next()) {
                 toReturn = new Candidate(rs.getInt("id"), rs.getString("name"));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error in findCandidateById() method");
         }
         return toReturn;
     }
