@@ -67,7 +67,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error in findAllPosts() method");
+            LOG.error("Error in findAllPosts() method", e);
         }
         return posts;
     }
@@ -84,7 +84,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error in findAllCandidates() method");
+            LOG.error("Error in findAllCandidates() method", e);
         }
         return candidates;
     }
@@ -114,7 +114,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error in createPost() method");
+            LOG.error("Error in createPost() method", e);
         }
         return post;
     }
@@ -128,7 +128,7 @@ public class PsqlStore implements Store {
             ps.setInt(3, post.getId());
             ps.executeUpdate();
         } catch (Exception e) {
-            LOG.error("Error in updatePost() method");
+            LOG.error("Error in updatePost() method", e);
         }
     }
 
@@ -155,7 +155,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error in createCandidate() method");
+            LOG.error("Error in createCandidate() method", e);
         }
         return candidate;
     }
@@ -168,7 +168,7 @@ public class PsqlStore implements Store {
             ps.setInt(2, candidate.getId());
             ps.executeUpdate();
         } catch (Exception e) {
-            LOG.error("Error in updateCandidate() method");
+            LOG.error("Error in updateCandidate() method", e);
         }
     }
 
@@ -187,7 +187,7 @@ public class PsqlStore implements Store {
                                     rs.getTimestamp("created").toLocalDateTime());
                 }
         } catch (Exception e) {
-            LOG.error("Error in findPostById() method");
+            LOG.error("Error in findPostById() method", e);
         }
         return toReturn;
     }
@@ -204,7 +204,7 @@ public class PsqlStore implements Store {
                 toReturn = new Candidate(rs.getInt("id"), rs.getString("name"));
             }
         } catch (Exception e) {
-            LOG.error("Error in findCandidateById() method");
+            LOG.error("Error in findCandidateById() method", e);
         }
         return toReturn;
     }
