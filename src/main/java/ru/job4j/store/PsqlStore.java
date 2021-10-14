@@ -312,7 +312,8 @@ public class PsqlStore implements Store {
             if (rs.next()) {
                 toReturn = new User(rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getString("email"));
+                        rs.getString("email"),
+                        rs.getString("password"));
             }
         } catch (Exception e) {
             LOG.error("Error in findUserByEmail() method", e);
