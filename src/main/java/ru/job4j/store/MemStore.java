@@ -2,6 +2,7 @@ package ru.job4j.store;
 
 import ru.job4j.model.Candidate;
 import ru.job4j.model.Post;
+import ru.job4j.model.User;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,6 +41,11 @@ public class MemStore implements Store {
         return candidates.values();
     }
 
+    @Override
+    public Collection<User> findAllUsers() {
+        return null;
+    }
+
     public void savePost(Post post) {
         if (post.getId() == 0) {
             post.setId(POST_ID.incrementAndGet());
@@ -55,6 +61,16 @@ public class MemStore implements Store {
         return candidates.get(id);
     }
 
+    @Override
+    public User findUserById(int id) {
+        return null;
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return null;
+    }
+
     public void saveCandidate(Candidate candidate) {
         if (candidate.getId() == 0) {
             candidate.setId(CANDIDATE_ID.incrementAndGet());
@@ -62,7 +78,17 @@ public class MemStore implements Store {
         candidates.put(candidate.getId(), candidate);
     }
 
+    @Override
+    public void saveUser(User user) {
+
+    }
+
     public void deleteCandidate(int id) {
         this.candidates.remove(id);
+    }
+
+    @Override
+    public void deleteUser(int parseInt) {
+
     }
 }

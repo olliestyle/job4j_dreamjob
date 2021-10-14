@@ -1,6 +1,7 @@
 package ru.job4j.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.mindrot.jbcrypt.BCrypt;
 import ru.job4j.model.Candidate;
 import ru.job4j.model.Post;
 
@@ -15,6 +16,16 @@ import java.util.List;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.model.User;
+
+/**
+ * Для выполнения запроса PreparedStatement имеет три метода:
+ * 1. boolean execute(): выполняет любую SQL-команду
+ * 2. ResultSet executeQuery(): выполняет команду SELECT,
+ *    которая возвращает данные в виде ResultSet
+ * 3. int executeUpdate(): выполняет такие SQL-команды,
+ *    как INSERT, UPDATE, DELETE, CREATE и возвращает количество измененных строк
+ */
 
 public class PsqlStore implements Store {
 
@@ -87,6 +98,25 @@ public class PsqlStore implements Store {
             LOG.error("Error in findAllCandidates() method", e);
         }
         return candidates;
+    }
+
+    @Override
+    public Collection<User> findAllUsers() {
+        List<User> users = new ArrayList<>();
+        try (Connection cn = pool.getConnection();
+            PreparedStatement ps = cn.prepareStatement("SELECT * FROM users")
+        ) {
+            try (ResultSet it = ps.executeQuery()) {
+                while (it.next()) {
+                    users.add(new User(it.getInt("id"),
+                                       it.getString("name"),
+                                       it.getString("email")));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error in findAllUsers() method", e);
+        }
+        return users;
     }
 
     @Override
@@ -173,6 +203,49 @@ public class PsqlStore implements Store {
     }
 
     @Override
+    public void saveUser(User user) {
+        if (user.getId() == 0) {
+            createUser(user);
+        } else {
+            updateUser(user);
+        }
+    }
+
+    private User createUser(User user) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement(
+                     "INSERT INTO users(name, email, password) VALUES (?, ?, ?)",
+                     PreparedStatement.RETURN_GENERATED_KEYS)
+        ) {
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+            ps.execute();
+            try (ResultSet id = ps.getGeneratedKeys()) {
+                if (id.next()) {
+                    user.setId(id.getInt(1));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error in createUser() method", e);
+        }
+        return user;
+    }
+
+    private void updateUser(User user) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("UPDATE users set name = ?, email = ? where id = ?")
+        ) {
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setInt(3, user.getId());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            LOG.error("Error in updateUser() method", e);
+        }
+    }
+
+    @Override
     public Post findPostById(int id) {
         Post toReturn = null;
         try (Connection cn = pool.getConnection();
@@ -210,6 +283,45 @@ public class PsqlStore implements Store {
     }
 
     @Override
+    public User findUserById(int id) {
+        User toReturn = null;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("SELECT * FROM users where id = ?")
+        ) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                toReturn = new User(rs.getInt("id"),
+                                    rs.getString("name"),
+                                    rs.getString("email"));
+            }
+        } catch (Exception e) {
+            LOG.error("Error in findUserById() method", e);
+        }
+        return toReturn;
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        User toReturn = null;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("SELECT * FROM users where email = ?")
+        ) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                toReturn = new User(rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"));
+            }
+        } catch (Exception e) {
+            LOG.error("Error in findUserByEmail() method", e);
+        }
+        return toReturn;
+    }
+
+
+    @Override
     public void deleteCandidate(int id) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement("DELETE FROM candidates WHERE ID = ?")
@@ -218,6 +330,18 @@ public class PsqlStore implements Store {
             ps.executeUpdate();
         } catch (Exception e) {
             LOG.error("Error in deleteCandidate() method", e);
+        }
+    }
+
+    @Override
+    public void deleteUser(int id) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("DELETE FROM users WHERE ID = ?")
+        ) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            LOG.error("Error in deleteUser() method", e);
         }
     }
 }
