@@ -16,9 +16,13 @@ public class MemStore implements Store {
 
     private final Map<Integer, Candidate> candidates = new ConcurrentHashMap<>();
 
+    private final Map<Integer, User> users = new ConcurrentHashMap<>();
+
     private final static AtomicInteger POST_ID = new AtomicInteger(3);
 
     private final static AtomicInteger CANDIDATE_ID = new AtomicInteger(3);
+
+    private final static AtomicInteger USER_ID = new AtomicInteger(3);
 
     private MemStore() {
         posts.put(1, new Post(1, "Junior Java Job", "Job for Junior Java Developer"));
@@ -27,6 +31,10 @@ public class MemStore implements Store {
         candidates.put(1, new Candidate(1, "Junior Java"));
         candidates.put(2, new Candidate(2, "Middle Java"));
         candidates.put(3, new Candidate(3, "Senior Java"));
+        users.put(1, new User(1, "Egor", "egor@mail.ru", "111"));
+        users.put(2, new User(2, "Oleg", "oleg@mail.ru", "222"));
+        users.put(3, new User(3, "Pavel", "pavel@mail.ru", "333"));
+
     }
 
     public static MemStore instOf() {
@@ -43,7 +51,7 @@ public class MemStore implements Store {
 
     @Override
     public Collection<User> findAllUsers() {
-        return null;
+        return users.values();
     }
 
     public void savePost(Post post) {
@@ -63,12 +71,12 @@ public class MemStore implements Store {
 
     @Override
     public User findUserById(int id) {
-        return null;
+        return users.get(id);
     }
 
     @Override
     public User findUserByEmail(String email) {
-        return null;
+        return users.values().stream().filter(el -> el.getEmail().equals(email)).findFirst().orElse(null);
     }
 
     public void saveCandidate(Candidate candidate) {
@@ -80,7 +88,10 @@ public class MemStore implements Store {
 
     @Override
     public void saveUser(User user) {
-
+        if (user.getId() == 0) {
+            user.setId(USER_ID.incrementAndGet());
+        }
+        users.put(user.getId(), user);
     }
 
     public void deleteCandidate(int id) {
@@ -88,7 +99,7 @@ public class MemStore implements Store {
     }
 
     @Override
-    public void deleteUser(int parseInt) {
-
+    public void deleteUser(int id) {
+        this.users.remove(id);
     }
 }
