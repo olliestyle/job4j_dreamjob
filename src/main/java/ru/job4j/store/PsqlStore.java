@@ -56,10 +56,24 @@ public class PsqlStore implements Store {
     }
 
     private static final class Lazy {
-        private static final Store INST = new PsqlStore();
+        private static final PsqlStore INST = new PsqlStore();
     }
 
-    public static Store instOf() {
+    public void setConfigForTests(Properties properties) {
+        pool.setDriverClassName(properties.getProperty("driver-class-name"));
+        pool.setUrl(properties.getProperty("url"));
+        pool.setUsername(properties.getProperty("username"));
+        pool.setPassword(properties.getProperty("password"));
+        pool.setMinIdle(5);
+        pool.setMaxIdle(10);
+        pool.setMaxOpenPreparedStatements(100);
+    }
+
+    public BasicDataSource getPoolForTest() {
+        return this.pool;
+    }
+
+    public static PsqlStore instOf() {
         return Lazy.INST;
     }
 

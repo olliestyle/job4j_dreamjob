@@ -1,0 +1,20 @@
+2021-10-21 11:43:08 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "POST" не найдена
+Table "POST" not found; SQL statement:
+DELETE FROM post [42102-200]
+2021-10-21 11:43:08 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "POST" не найдена
+Table "POST" not found; SQL statement:
+INSERT INTO post(name, description, created) VALUES (?, ?, ?) [42102-200]
+2021-10-21 11:43:08 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "POST" не найдена
+Table "POST" not found; SQL statement:
+SELECT * FROM post where id = ? [42102-200]
+2021-10-21 11:43:08 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "POST" не найдена
+Table "POST" not found; SQL statement:
+DELETE FROM post [42102-200]
+2021-10-21 11:43:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "DATABASECHANGELOGLOCK" не найдена
+Table "DATABASECHANGELOGLOCK" not found; SQL statement:
+SELECT COUNT(*) FROM DATABASECHANGELOGLOCK [42102-200]

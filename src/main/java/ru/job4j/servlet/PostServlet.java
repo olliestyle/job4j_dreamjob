@@ -13,15 +13,17 @@ public class PostServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("posts", PsqlStore.instOf().findAllPosts());
+        PsqlStore psqlStore = PsqlStore.instOf();
+        req.setAttribute("posts", psqlStore.findAllPosts());
         req.setAttribute("user", req.getSession().getAttribute("user"));
         req.getRequestDispatcher("post/posts.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PsqlStore psqlStore = PsqlStore.instOf();
         req.setCharacterEncoding("UTF-8");
-        PsqlStore.instOf().savePost(new Post(Integer.parseInt(req.getParameter("id")), req.getParameter("name"), req.getParameter("description")));
+        psqlStore.savePost(new Post(Integer.parseInt(req.getParameter("id")), req.getParameter("name"), req.getParameter("description")));
         resp.sendRedirect(req.getContextPath() + "/posts.do");
     }
 }
