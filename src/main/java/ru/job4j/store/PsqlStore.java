@@ -270,6 +270,26 @@ public class PsqlStore implements Store {
     }
 
     @Override
+    public Post findPostByName(String name) {
+        Post toReturn = null;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("SELECT * FROM post where name = ?")
+        ) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                toReturn = new Post(rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getTimestamp("created").toLocalDateTime());
+            }
+        } catch (Exception e) {
+            LOG.error("Error in findPostByName() method", e);
+        }
+        return toReturn;
+    }
+
+    @Override
     public Candidate findCandidateById(int id) {
         Candidate toReturn = null;
         try (Connection cn = pool.getConnection();
@@ -282,6 +302,23 @@ public class PsqlStore implements Store {
             }
         } catch (Exception e) {
             LOG.error("Error in findCandidateById() method", e);
+        }
+        return toReturn;
+    }
+
+    @Override
+    public Candidate findCandidateByName(String name) {
+        Candidate toReturn = null;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("SELECT * FROM candidates where name = ?")
+        ) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                toReturn = new Candidate(rs.getInt("id"), rs.getString("name"));
+            }
+        } catch (Exception e) {
+            LOG.error("Error in findCandidateByName() method", e);
         }
         return toReturn;
     }

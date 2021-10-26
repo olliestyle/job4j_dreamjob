@@ -65,8 +65,24 @@ public class MemStore implements Store {
         return posts.get(id);
     }
 
+    public Post findPostByName(String name) {
+        return posts.values().
+                stream().
+                filter(post -> post.getName().equals(name)).
+                findFirst().
+                orElse(null);
+    }
+
     public Candidate findCandidateById(int id) {
         return candidates.get(id);
+    }
+
+    public Candidate findCandidateByName(String name) {
+        return candidates.values().
+                stream().
+                filter(candidate -> candidate.getName().equals(name)).
+                findFirst().
+                orElse(null);
     }
 
     @Override
