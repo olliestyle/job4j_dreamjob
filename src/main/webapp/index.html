@@ -7,6 +7,28 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        function validateInput() {
+            var userName = $('#userName').val();
+            validateField(userName, "Имя пользователя");
+            var userSurname = $('#userSurname').val();
+            validateField(userSurname, "Фамилия пользователя");
+            var sex = "";
+            if ($('#male').is(':checked')) {
+                sex = ($('#male:checked').val());
+            } else if ($('#female').is(':checked')) {
+                sex = ($('#female:checked').val());
+            }
+            validateField(sex, "Пол пользователя");
+            var userDescription = $('#userDescription').val();
+            validateField(userDescription, "Описание пользователя");
+        }
+        function validateField(val, fieldName) {
+            if (val === '') {
+                alert("Поле " + "\"" + fieldName + "\"" + " не заполнено.");
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -16,31 +38,31 @@
 <div class="container pt-3">
 <form>
     <div class="form-group">
-        <label>Имя пользователя</label>
-        <input type="text" class="form-control" name="UserName" size="200">
+        <label for="userName">Имя пользователя</label>
+        <input type="text" id="userName" class="form-control" name="UserName" size="200">
     </div>
     <div class="form-group">
-        <label>Фамилия пользователя</label>
-        <input type="text" class="form-control" name="UserSurname">
+        <label for="userSurname">Фамилия пользователя</label>
+        <input type="text" id="userSurname" class="form-control" name="UserSurname">
     </div>
-    <label>Выберите Пол</label>
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="sex" id="male" value="male" checked>
-        <label class="form-check-label" for="male">
-            Мужской
-        </label>
-    </div>
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="sex" id="female" value="female">
-        <label class="form-check-label" for="female">
-            Женский
-        </label>
-    </div>
+        <label>Выберите Пол</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="sex" id="male" value="male">
+            <label class="form-check-label" for="male">
+                Мужской
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="sex" id="female" value="female">
+            <label class="form-check-label" for="female">
+                Женский
+            </label>
+        </div>
     <div class="form-group">
-        <label>Описание пользователя</label>
-        <input type="text" class="form-control" name="UserDescription">
+        <label for="userDescription">Описание пользователя</label>
+        <input type="text" id="userDescription" class="form-control" name="UserDescription">
     </div>
-    <button type="submit" class="btn btn-primary">Отправить</button>
+    <button type="submit" class="btn btn-primary" onclick="validateInput()">Отправить</button>
     <table class="table">
         <thead>
         <tr>
