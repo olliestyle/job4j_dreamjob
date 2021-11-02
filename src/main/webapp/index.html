@@ -8,25 +8,42 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
-        function validateInput() {
+        var tableNumber = 3;
+        function validateInputAndAddRow() {
+            var check = true;
             var userName = $('#userName').val();
-            validateField(userName, "Имя пользователя");
             var userSurname = $('#userSurname').val();
-            validateField(userSurname, "Фамилия пользователя");
             var sex = "";
             if ($('#male').is(':checked')) {
                 sex = ($('#male:checked').val());
             } else if ($('#female').is(':checked')) {
                 sex = ($('#female:checked').val());
             }
-            validateField(sex, "Пол пользователя");
             var userDescription = $('#userDescription').val();
-            validateField(userDescription, "Описание пользователя");
+            if (!validateField(userName, "Имя пользователя")
+                | !validateField(userSurname, "Фамилия пользователя")
+                | !validateField(sex, "Пол пользователя")
+                | !validateField(userDescription, "Описание пользователя")) {
+                check = false;
+            }
+            if (check) {
+                addRow(userName, userSurname, sex, userDescription);
+            }
         }
         function validateField(val, fieldName) {
+            var isValid = true;
             if (val === '') {
                 alert("Поле " + "\"" + fieldName + "\"" + " не заполнено.");
+                isValid = false;
             }
+            return isValid;
+        }
+        function addRow(userName, userSurname, sex, userDescription) {
+            $('#usersTable tr:last').after('<tr>' + '<th scope="row">' + tableNumber++ + '</th>'
+                                             + '<td>' + userName + '</td>'
+                                             + '<td>' + userSurname + '</td>'
+                                             + '<td>' + sex + '</td>'
+                                             + '<td>' + userDescription + '</td>' + '</tr>');
         }
     </script>
 </head>
@@ -62,8 +79,8 @@
         <label for="userDescription">Описание пользователя</label>
         <input type="text" id="userDescription" class="form-control" name="UserDescription">
     </div>
-    <button type="submit" class="btn btn-primary" onclick="validateInput()">Отправить</button>
-    <table class="table">
+    <button type="reset" class="btn btn-primary" onclick="validateInputAndAddRow()">Добавить пользователя</button>
+    <table class="table" id="usersTable">
         <thead>
         <tr>
             <th scope="col">№</th>
