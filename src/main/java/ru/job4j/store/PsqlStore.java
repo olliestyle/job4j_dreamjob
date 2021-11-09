@@ -2,8 +2,7 @@ package ru.job4j.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.mindrot.jbcrypt.BCrypt;
-import ru.job4j.model.Candidate;
-import ru.job4j.model.Post;
+import ru.job4j.model.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.job4j.model.User;
 
 /**
  * Для выполнения запроса PreparedStatement имеет три метода:
@@ -31,6 +29,7 @@ public class PsqlStore implements Store {
 
     private final BasicDataSource pool = new BasicDataSource();
     private static final Logger LOG = LoggerFactory.getLogger(PsqlStore.class.getName());
+    private DateTransformer dt = new DateTransformer();
 
     private PsqlStore() {
         Properties cfg = new Properties();
@@ -64,6 +63,23 @@ public class PsqlStore implements Store {
     }
 
     @Override
+    public Collection<City> findAllCities() {
+        List<City> cities = new ArrayList<>();
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement("SELECT * FROM cities")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    cities.add(new City(rs.getInt("id"),
+                                        rs.getString("name")));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error in findAllCities() method", e);
+        }
+        return cities;
+    }
+
+    @Override
     public Collection<Post> findAllPosts() {
         List<Post> posts = new ArrayList<>();
         try (Connection cn = pool.getConnection();
@@ -80,6 +96,31 @@ public class PsqlStore implements Store {
         } catch (Exception e) {
             LOG.error("Error in findAllPosts() method", e);
         }
+        for (Post post: posts) {
+            post.setDate(dt.transformDate(post.getCreated()));
+        }
+        return posts;
+    }
+
+    @Override
+    public Collection<Post> findLastDayPosts() {
+        List<Post> posts = new ArrayList<>();
+        try (Connection con = pool.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM post WHERE created > current_date - 1")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    posts.add(new Post(rs.getInt("id"),
+                                       rs.getString("name"),
+                                       rs.getString("description"),
+                                       rs.getTimestamp("created").toLocalDateTime()));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error in findLastDayPosts() method", e);
+        }
+        for (Post post: posts) {
+            post.setDate(dt.transformDate(post.getCreated()));
+        }
         return posts;
     }
 
@@ -91,11 +132,40 @@ public class PsqlStore implements Store {
         ) {
             try (ResultSet it = ps.executeQuery()) {
                 while (it.next()) {
-                    candidates.add(new Candidate(it.getInt("id"), it.getString("name")));
+                    candidates.add(new Candidate(it.getInt("id"),
+                                                 it.getString("name"),
+                                                 it.getInt("cityId"),
+                                                 it.getTimestamp("created").toLocalDateTime()));
                 }
             }
         } catch (Exception e) {
             LOG.error("Error in findAllCandidates() method", e);
+        }
+        for (Candidate candidate: candidates) {
+            candidate.setDate(dt.transformDate(candidate.getCreated()));
+        }
+        return candidates;
+    }
+
+    @Override
+    public Collection<Candidate> findLastDayCandidates() {
+        List<Candidate> candidates = new ArrayList<>();
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement("SELECT * FROM candidates WHERE created > current_date - 1")
+        ) {
+            try (ResultSet it = ps.executeQuery()) {
+                while (it.next()) {
+                    candidates.add(new Candidate(it.getInt("id"),
+                            it.getString("name"),
+                            it.getInt("cityId"),
+                            it.getTimestamp("created").toLocalDateTime()));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error in findLastDayCandidates() method", e);
+        }
+        for (Candidate candidate: candidates) {
+            candidate.setDate(dt.transformDate(candidate.getCreated()));
         }
         return candidates;
     }
@@ -174,10 +244,12 @@ public class PsqlStore implements Store {
     private Candidate createCandidate(Candidate candidate) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement(
-                     "INSERT INTO candidates(name) VALUES (?)",
+                     "INSERT INTO candidates(name, cityid, created) VALUES (?, ?, ?)",
                           PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             ps.setString(1, candidate.getName());
+            ps.setInt(2, candidate.getCityId());
+            ps.setObject(3, candidate.getCreated());
             ps.execute();
             try (ResultSet id = ps.getGeneratedKeys()) {
                 if (id.next()) {
@@ -192,10 +264,11 @@ public class PsqlStore implements Store {
 
     private void updateCandidate(Candidate candidate) {
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps =  cn.prepareStatement("UPDATE candidates set name = ? where id = ?")
+             PreparedStatement ps =  cn.prepareStatement("UPDATE candidates set name = ?, cityid = ? where id = ?")
         ) {
             ps.setString(1, candidate.getName());
-            ps.setInt(2, candidate.getId());
+            ps.setInt(2, candidate.getCityId());
+            ps.setInt(3, candidate.getId());
             ps.executeUpdate();
         } catch (Exception e) {
             LOG.error("Error in updateCandidate() method", e);
@@ -274,7 +347,10 @@ public class PsqlStore implements Store {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                toReturn = new Candidate(rs.getInt("id"), rs.getString("name"));
+                toReturn = new Candidate(rs.getInt("id"),
+                                         rs.getString("name"),
+                                         rs.getInt("cityId"),
+                                         rs.getTimestamp("created").toLocalDateTime());
             }
         } catch (Exception e) {
             LOG.error("Error in findCandidateById() method", e);

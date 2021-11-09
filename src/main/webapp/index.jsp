@@ -28,6 +28,24 @@
                 Сегодняшние вакансии.
             </div>
             <div class="card-body">
+                <table class="table">
+                    <tbody>
+                    <c:forEach items="${posts}" var="post">
+                        <tr>
+                            <td>
+                                <a href='<c:url value="/post/edit.jsp?id=${post.id}"/>'>
+                                    <i class="fa fa-edit mr-3"></i>
+                                </a>
+                            <td><c:out value="${post.name}"/></td>
+                            <td><c:out value="${post.description}"/></td>
+                            <td><c:out value="${post.date}"/></td>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body">
             </div>
         </div>
     </div>
@@ -35,6 +53,38 @@
         <div class="card" style="width: 100%">
             <div class="card-header">
                 Сегодняшние кандидаты.
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                    <c:forEach items="${candidates}" var="candidate">
+                        <tr>
+                            <td>
+                                <a href='<c:url value="/candidate/edit.jsp?id=${candidate.id}"/>'>
+                                    <button style="font-size:12px;color:blue">Edit candidate</button>
+                                </a>
+                                <a href='<c:url value="/photoUpload.do?id=${candidate.id}"/>'>
+                                    <button style="font-size:12px;color:blue">Add photo</button>
+                                </a>
+                                <a href='<c:url value="/candidateDelete.do?id=${candidate.id}"/>'>
+                                    <button style="font-size:12px;color:blue">Delete candidate</button>
+                                </a>
+                            <td><c:out value="${candidate.name}"/> </td>
+                            <td><c:forEach items="${cities}" var="city">
+                                <c:if test="${city.id == candidate.cityId}">
+                                    <c:out value="${city.name}"/>
+                                </c:if>
+                            </c:forEach>
+                            </td>
+                            <td><c:out value="${candidate.date}"/></td>
+                            </td>
+                            <td>
+                                <img src="<c:url value='/download?name=${candidate.id}'/>" width="100px" height="100px"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
             </div>
             <div class="card-body">
             </div>

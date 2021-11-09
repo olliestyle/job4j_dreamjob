@@ -1,6 +1,7 @@
 package ru.job4j.store;
 
 import ru.job4j.model.Candidate;
+import ru.job4j.model.City;
 import ru.job4j.model.Post;
 import ru.job4j.model.User;
 
@@ -18,19 +19,23 @@ public class MemStore implements Store {
 
     private final Map<Integer, User> users = new ConcurrentHashMap<>();
 
+    private final Map<Integer, City> cities = new ConcurrentHashMap<>();
+
     private final static AtomicInteger POST_ID = new AtomicInteger(3);
 
     private final static AtomicInteger CANDIDATE_ID = new AtomicInteger(3);
 
     private final static AtomicInteger USER_ID = new AtomicInteger(3);
 
+    private final static AtomicInteger CITY_ID = new AtomicInteger(3);
+
     private MemStore() {
         posts.put(1, new Post(1, "Junior Java Job", "Job for Junior Java Developer"));
         posts.put(2, new Post(2, "Middle Java Job", "Job for Middle Java Developer"));
         posts.put(3, new Post(3, "Senior Java Job", "Job for Senior Java Developer"));
-        candidates.put(1, new Candidate(1, "Junior Java"));
-        candidates.put(2, new Candidate(2, "Middle Java"));
-        candidates.put(3, new Candidate(3, "Senior Java"));
+        candidates.put(1, new Candidate(1, "Junior Java", 1));
+        candidates.put(2, new Candidate(2, "Middle Java", 2));
+        candidates.put(3, new Candidate(3, "Senior Java", 3));
         users.put(1, new User(1, "Egor", "egor@mail.ru", "111"));
         users.put(2, new User(2, "Oleg", "oleg@mail.ru", "222"));
         users.put(3, new User(3, "Pavel", "pavel@mail.ru", "333"));
@@ -45,8 +50,22 @@ public class MemStore implements Store {
         return posts.values();
     }
 
+    @Override
+    public Collection<Post> findLastDayPosts() {
+        return null;
+    }
+
     public Collection<Candidate> findAllCandidates() {
         return candidates.values();
+    }
+
+    @Override
+    public Collection<Candidate> findLastDayCandidates() {
+        return null;
+    }
+
+    public Collection<City> findAllCities() {
+        return cities.values();
     }
 
     @Override

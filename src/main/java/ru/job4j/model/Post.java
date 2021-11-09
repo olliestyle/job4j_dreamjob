@@ -8,6 +8,7 @@ public class Post {
     private String name;
     private String description;
     private LocalDateTime created;
+    private String date;
 
     public Post(int id, String name, String description) {
         this.id = id;
@@ -21,6 +22,14 @@ public class Post {
         this.name = name;
         this.description = description;
         this.created = created;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public int getId() {

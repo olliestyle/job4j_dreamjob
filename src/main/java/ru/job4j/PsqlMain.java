@@ -29,14 +29,14 @@ public class PsqlMain {
 
         System.out.println();
         System.out.println("Create New Candidate");
-        store.saveCandidate(new Candidate(0, "Oleg"));
+        store.saveCandidate(new Candidate(0, "Oleg", 1));
         for (Candidate candidate: store.findAllCandidates()) {
             System.out.println(candidate.getId() + " " + candidate.getName());
         }
 
         System.out.println();
         System.out.println("Update Candidate");
-        store.saveCandidate(new Candidate(2, "Gleb"));
+        store.saveCandidate(new Candidate(2, "Gleb", 2));
         for (Candidate candidate: store.findAllCandidates()) {
             System.out.println(candidate.getId() + " " + candidate.getName());
         }

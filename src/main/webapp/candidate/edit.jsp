@@ -18,14 +18,40 @@
             integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-
+    <script>
+        function validateInput() {
+            var isValid = true;
+            var candidateName = $('#candidateName').val();
+            if (candidateName === '') {
+                alert("Введите имя кандидата");
+                isValid = false;
+            }
+            return isValid;
+        }
+    </script>
     <title>Работа мечты</title>
 </head>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:8080/job4j_dreamjob/cities',
+            dataType: 'json'
+        }).done(function (data) {
+            for (var city of data) {
+                $('#cityList').append(`<option value="${city.id}">${city.name}</option>`);
+            }
+        }).fail(function (err) {
+            console.log(err);
+        })
+    });
+</script>
 <body>
 <%@ include file = "/header.jsp" %>
 <%
     String id = request.getParameter("id");
-    Candidate candidate = new Candidate(0, "");
+    Candidate candidate = new Candidate(0, "", 0);
     if (id != null) {
         candidate = PsqlStore.instOf().findCandidateById(Integer.parseInt(id));
     }
@@ -44,9 +70,14 @@
                 <form action="<%=request.getContextPath()%>/candidates.do?id=<%=candidate.getId()%>" method="post">
                     <div class="form-group">
                         <label>Имя</label>
-                        <input type="text" class="form-control" name="name" value="<%=candidate.getName()%>">
+                        <input type="text" class="form-control" id="candidateName" name="name" placeholder="Имя кандидата">
                     </div>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <div class="form-group">
+                        <label>Город</label>
+                        <select id="cityList" name="cityId">
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" onclick="return validateInput()">Сохранить</button>
                 </form>
             </div>
         </div>

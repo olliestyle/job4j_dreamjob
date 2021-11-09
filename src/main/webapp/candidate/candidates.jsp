@@ -48,6 +48,13 @@
                                     <button style="font-size:12px;color:blue">Delete candidate</button>
                                 </a>
                             <td><c:out value="${candidate.name}"/> </td>
+                            <td><c:forEach items="${cities}" var="city">
+                                <c:if test="${city.id == candidate.cityId}">
+                                    <c:out value="${city.name}"/>
+                                </c:if>
+                            </c:forEach>
+                            </td>
+                            <td><c:out value="${candidate.date}"/></td>
                             </td>
                             <td>
                                 <img src="<c:url value='/download?name=${candidate.id}'/>" width="100px" height="100px"/>

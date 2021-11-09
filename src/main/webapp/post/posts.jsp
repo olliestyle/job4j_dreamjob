@@ -43,7 +43,7 @@
                                 </a>
                                 <td><c:out value="${post.name}"/></td>
                                 <td><c:out value="${post.description}"/></td>
-                                <td><c:out value="${post.created}"/></td>
+                                <td><c:out value="${post.date}"/></td>
                             </td>
                         </tr>
                     </c:forEach>
