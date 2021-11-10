@@ -16,11 +16,11 @@ import java.util.Collection;
 
 public class CitiesServlet extends HttpServlet {
 
-    private final Collection<City> cityList = PsqlStore.instOf().findAllCities();
     private static final Gson GSON = new GsonBuilder().create();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Collection<City> cityList = PsqlStore.instOf().findAllCities();
         resp.setContentType("application/json; charset=utf-8");
         OutputStream output = resp.getOutputStream();
         String json = GSON.toJson(cityList);
